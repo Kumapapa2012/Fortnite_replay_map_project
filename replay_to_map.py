@@ -1,19 +1,25 @@
 import argparse
 import json
+import subprocess
 import sys
 from pathlib import Path
 
 from PIL import Image, ImageDraw
 
+_DEFAULT_EXE = Path(__file__).parent / "ReplayToJson/bin/Release/net9.0/ReplayToJson.exe"
+
 
 def load_json(path: Path) -> dict:
-    with open(path, encoding="utf-8") as f:
+    with open(path, encoding="utf-8-sig") as f:
         return json.load(f)
 
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Plot Fortnite replay route on map image.")
-    parser.add_argument("FN_REPLAY_FILE", type=Path, help="Path to Fortnite replay JSON file.")
+    parser.add_argument(
+        "FN_REPLAY_FILE", type=Path,
+        help="Path to Fortnite replay file (.replay or .json)."
+    )
     parser.add_argument(
         "--base-params", dest="FN_REPLAY_PARAMS", type=Path,
         default=Path("base_params.json"),
@@ -24,7 +30,31 @@ def parse_args():
         default=Path("user_params.json"),
         help="Path to user_params.json (default: ./user_params.json)"
     )
+    parser.add_argument(
+        "--exe", dest="EXE_PATH", type=Path,
+        default=_DEFAULT_EXE,
+        help=f"Path to ReplayToJson.exe (default: {_DEFAULT_EXE})"
+    )
     return parser.parse_args()
+
+
+def run_replay_to_json(replay_path: Path, exe_path: Path) -> Path:
+    """Call ReplayToJson.exe to convert .replay binary to JSON. Returns output JSON path."""
+    if not exe_path.exists():
+        print(f"Error: ReplayToJson.exe not found: {exe_path}", file=sys.stderr)
+        sys.exit(1)
+
+    result = subprocess.run(
+        [str(exe_path), str(replay_path)],
+        capture_output=True,
+        text=True
+    )
+
+    if result.returncode != 0:
+        print(f"Error: ReplayToJson failed:\n{result.stderr}", file=sys.stderr)
+        sys.exit(1)
+
+    return Path(result.stdout.strip())
 
 
 def main():
@@ -34,21 +64,28 @@ def main():
     base_params_file: Path = args.FN_REPLAY_PARAMS
     user_params_file: Path = args.FN_USER_PARAMS
 
-    replay = load_json(replay_file)
+    if replay_file.suffix.lower() == ".replay":
+        print(f"Converting {replay_file.name} to JSON ...")
+        replay_json_file = run_replay_to_json(replay_file, args.EXE_PATH)
+        print(f"Converted  -> {replay_json_file}")
+    else:
+        replay_json_file = replay_file
+
+    replay = load_json(replay_json_file)
     base_params = load_json(base_params_file)
     user_params = load_json(user_params_file)
 
     # --- Step 1: Build location array ---
     location_entries = build_location_entries(replay, base_params, user_params)
 
-    output_path = replay_file.stem + "_locations.json"
+    output_path = replay_json_file.stem + "_locations.json"
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(location_entries, f, ensure_ascii=False, indent=2)
     print(f"Saved {len(location_entries)} entries -> {output_path}")
 
     # --- Step 2: Draw route on map ---
     img = draw_route(location_entries, base_params)
-    image_output_path = replay_file.stem + "_map.png"
+    image_output_path = replay_json_file.stem + "_map.png"
     img.save(image_output_path)
     print(f"Saved map image -> {image_output_path}")
 

@@ -2,8 +2,9 @@
 *_locations.json
 *_map.png
 
-# Replay input files
+# Replay input files / Intermediate JSON output from ReplayToJson.exe
 replay*.json
+UnsavedReplay*.json
 *.replay
 
 # User-specific params
@@ -11,6 +12,10 @@ user_params.json
 
 # Working files
 Working/
+
+# C# build artifacts
+ReplayToJson/bin/
+ReplayToJson/obj/
 
 # Python
 __pycache__/
