@@ -1,6 +1,7 @@
 # ReplayToJson
 
 Fortnite リプレイファイル（`.replay`）を JSON に変換する CLI ツール。
+Fortnite がインストールされている環境でないとおそらく動作しません。
 
 ---
 
