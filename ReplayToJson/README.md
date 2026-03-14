@@ -26,6 +26,26 @@ dotnet publish -c Release -r win-x64 --self-contained false /p:PublishSingleFile
 
 ---
 
+## 依存アセンブリ
+
+`dotnet build` 実行後、`bin/Release/net9.0/` に以下の DLL が出力されます。
+exe と同じフォルダに揃っていないと実行時エラーになります。
+
+| アセンブリ | 用途 |
+|---|---|
+| `FortniteReplayReader.dll` | Fortnite リプレイファイルのパース |
+| `Unreal.Core.dll` | Unreal Engine バイナリ形式の低レベル読み取り |
+| `Unreal.Encryption.dll` | Unreal Engine ファイルの暗号化処理 |
+| `OozSharp.dll` | Oodle 圧縮形式の展開 |
+| `Microsoft.Extensions.DependencyInjection.Abstractions.dll` | DI 抽象化（FortniteReplayReader の依存） |
+| `Microsoft.Extensions.Logging.Abstractions.dll` | ログ抽象化（FortniteReplayReader の依存） |
+
+> `System.Text.Json` は .NET 9 ランタイムに組み込まれているため、別途 DLL は不要です。
+
+`dotnet publish` で単一ファイルにまとめた場合、依存 DLL はすべて exe に埋め込まれます。
+
+---
+
 ## Usage
 
 ```
