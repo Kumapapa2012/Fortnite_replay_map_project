@@ -2,6 +2,8 @@
 
 Fortnite リプレイファイル（`.replay`）からプレイヤーの移動ルートを読み取り、マップ画像上にプロットするスクリプト。
 
+Fortnite リプレイファイルは通常 %LocalAppData%\FortniteGame\Saved\Demos にあります。
+
 マップ画像のファイルは、[Fortnite API で取得している](https://dash.fortnite-api.com/endpoints/map)ことを想定しています。
 画像サイズは既定で 2048ｘ2048。
 
