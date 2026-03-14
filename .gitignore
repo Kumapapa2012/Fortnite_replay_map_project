@@ -1,0 +1,17 @@
+# Output files from replay_to_map.py
+*_locations.json
+*_map.png
+
+# Replay input files
+replay*.json
+*.replay
+
+# User-specific params
+user_params.json
+
+# Working files
+Working/
+
+# Python
+__pycache__/
+*.pyc

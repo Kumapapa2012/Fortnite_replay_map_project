@@ -1,0 +1,15 @@
+{
+  "map_image": {
+    "path": "map_ja.png",
+    "width": 2048,
+    "height": 2048
+  },
+  "world_to_pixel": {
+    "scale_x": 0.00682888,
+    "scale_y": 0.00673428,
+    "world_origin_on_map": {
+      "x": 964,
+      "y": 1014
+    }
+  }
+}
